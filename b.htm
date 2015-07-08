@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Demo</title>
+    <style>
+      @-webkit-keyframes myfirst
+      {
+      	0% {background: red;}
+      	25% {background: yellow;}
+      	50% {background: blue;}
+      	100% {background: green;}
+      }
+      @keyframes myfirst
+{
+0%   {background: red;}
+25%  {background: yellow;}
+50%  {background: blue;}
+75%  {background: green;}
+100% {background: red;}
+}
+      div{
+      	-webkit-animation-name:myfirst;
+      	-webkit-animation-duration:5s;
+        -weblit-animation-timing-function:linear;
+        -weblit-animation-delay:2s;
+        -weblit-animation-iteration-count:infinite;
+        -weblit-animation-direction:alternate;
+        -weblit-animation-play-state:running;
+        animation-name:myfirst;
+        animation-duration:5s;
+        animation-timing-function:linear;
+        animation-delay:2s;
+        animation-iteration-count:infinite;
+        animation-direction:alternate;
+        animation-play-state:running;
+
+      }
+    </style>
+</head>
+<body>
+    <div style="width:100px;height:100px;background:red"></div>
+</body>
+</html>
