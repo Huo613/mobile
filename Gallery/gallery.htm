@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html><head>
+	<title>Gallery</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="animate.css">
+  <script src=zepto.min.js></script>
+    <style type="text/css">
+       blockquote, body, button, dd, dl, dt, fieldset, form, h1, h2, h3, h4, h5, h6, hr, input,legend, li, ol, p, pre, td, textarea, th, ul,img{
+       	margin: 0;
+       	padding: 0;
+        
+       }
+       ul{list-style: none;}
+       li{width: 100px;height: 100px;float: left;overflow: hidden;}
+       body{
+        background-color: black;
+       }
+       div{
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        background-color: black;
+       }
+    </style>
+</head>
+<body>
+   <ul class="img-container" id="container">
+    
+   </ul>
+   <div id="largeImg_container" class="animated fadeIn" style="display:none">
+     <img  id="largeImg">
+   </div>
+</body>
+<script type="text/javascript">
+  //var width=device-width;
+  var picNum=17; //图片的总个数
+  var zWin=$(window);//显示窗口
+  var temp='';
+ 
+ var render=function showPic(){
+    var pad=2;
+    var picWidth=Math.floor((zWin.width()-3*pad)/4); 
+    //alert("picWidth="+picWidth);
+    for (var i = 1; i <=picNum; i++) {
+      var p=pad;
+      var imgsrc='img/'+i+'.jpg';
+      if (i%4==1) {
+          p=0;
+        }
+        //
+        temp+='<li data_id="'+i+'" class="animated bounceIn" style="width:'+picWidth+'px;height:'+picWidth+'px; padding-left:'+p+'px;padding-top:'+pad+'px"><canvas id="imgc_'+i+'"></canvas></li>';
+       /*用canvas画布来渲染图片：
+       （1）获取<canvas id="imgc_'+i+'"></canvas>元素对应的DOM对象，也就是一个canvas对象
+       （2）调用canvas对象的getContext(‘2d’);方法，该方法返回一个CanvasRenderingContext2D对象，该对象即可绘制图形
+       （3）调用CanvasRenderingContext2D对象的方法绘图
+       */
+         var imgObject=new Image();
+         imgObject.index=i;
+         imgObject.onload=function(){
+           var cvs=$('#imgc_'+this.index)[0].getContext('2d');
+           cvs.width=this.width;
+           cvs.height=this.height;
+           cvs.drawImage(this,0,0);
+         }
+         //图片对象请求图片资源
+         imgObject.src=imgsrc;
+        }
+     
+   
+    $("#container").html(temp);
+  }
+  render();
+
+  
+  var wImage=$('#largeImg');
+ var domImg=wImage[0]; //wImage的dom引用
+  var loadImg=function(id,callback){
+
+    $("#largeImg_container").css({
+      width:zWin.width(),
+      height:zWin.height(),
+      
+    }).show();
+    var imgsrc='img/'+id+'.large.jpg';
+    var imgObject=new Image();
+  
+   //图片对象请求图片资源
+    imgObject.src = imgsrc;
+    imgObject.onload = function(){
+      //图片真实的宽度
+      var w=this.width; 
+      //图片真实的高度
+      var h=this.height;
+     // alert("w="+w);
+      //alert("h="+h);
+      //显示屏的宽
+      var winWidth=zWin.width();
+      //alert("winWidth="+winWidth);
+       //显示屏的高
+      var winHeight=zWin.height();
+      // alert("winHeight="+winHeight);
+       //对于竖的图片
+     
+      //对于横图
+      wImage.css('width','auto').css('height','auto');
+      wImage.css('padding-left','0px').css('padding-top','0px');
+      if (h/w>1.2) {
+        //对于竖的图片
+      var rWindth=w*winHeight/h;
+     // alert("rWindth="+rWindth);
+      var paddingLeft=parseInt((winWidth-rWindth)/2);
+      //alert("paddingLeft="+paddingLeft);
+        wImage.attr('src',imgsrc).css('height',winHeight).css('padding-left',paddingLeft);
+
+      }else{
+      //对于横图
+      var rHeight=h*winWidth/w;
+       //alert("rHeight="+rHeight);
+      var paddingTop=parseInt((winHeight-rHeight)/2);
+      //alert("paddingTop="+paddingTop);
+      wImage.attr('src',imgsrc).css('width',winWidth).css('padding-top',paddingTop);
+
+      }
+    }
+      callback&&callback();
+  }
+  var cid;
+  $("#container").delegate("li","tap",function(){
+
+    var img_id=cid=$(this).attr("data_id");
+    loadImg(img_id);
+  });
+  $("#largeImg_container").tap(function(){
+    $(this).hide();
+  }).swipeLeft(function(){
+      cid++;
+      if (cid>picNum) {
+        cid=picNum;
+      }else{
+        loadImg(cid,function(){
+          domImg.addEventListener('webkitAnimationEnd',function(){
+            wImage.removeClass('animated bounceInLeft');
+            domImg.removeEventListener('webkitAnimationEnd');
+            lock=false;
+          },false);
+          wImage.addClass('animated bounceInLeft');
+        });
+      }
+  }).swipeRight(function(){
+      cid--;
+      if (cid<1) {
+        cid=1;
+      }else{
+        loadImg(cid,function(){
+           domImg.addEventListener('webkitAnimationEnd',function(){
+            wImage.removeClass('animated bounceInRight');
+            domImg.removeEventListener('webkitAnimationEnd');
+            lock=false;
+          },false)
+         wImage.addClass('animated bounceInRight');
+        });
+      }
+  });
+</script>
+</html>
